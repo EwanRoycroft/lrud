@@ -1053,6 +1053,51 @@ export class Lrud {
     this.registerTree(subTreeRootNodeConfig)
   }
 
+  getTree (node: NodeId | Node): void {
+    node = typeof node === 'string' ? this.getNode(node) : node as Node
+
+    if (!node) {
+      return
+    }
+
+    const nodeToTree = function (node : Node) {
+      const tree = node
+
+      if (tree.parent) tree.parent = tree.parent.id
+
+      if (tree.activeChild) tree.activeChild = tree.activeChild.id
+
+      let children
+
+      if (tree.children) {
+        children = []
+        for (const child of tree.children) {
+          children.push(nodeToTree(child))
+        }
+      }
+
+      tree.children = children
+
+      return tree
+    }
+
+    return nodeToTree(node)
+  }
+
+  restoreTree (subTreeRootNodeConfig: NodeConfig) {
+    this.registerTree(subTreeRootNodeConfig)
+
+    // Restore the previously-active child of each node of the tree.
+    const setActiveChildRecursiveSilent = function (node: Node): void {
+      if (node.activeChild) {
+        this.getNode(node.id).activeChild = this.getNode(node.activeChild)
+        setActiveChildRecursiveSilent(node.children.find((child) => child.id === node.activeChild))
+      }
+    }
+
+    setActiveChildRecursiveSilent(subTreeRootNodeConfig)
+  }
+
   /**
    * Checks is node contains children that might be focused (are a focusable candidates).
    * It checks the whole node's children sub-tree, not only direct children.
