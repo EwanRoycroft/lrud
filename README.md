@@ -1,5 +1,7 @@
 # LRUD [![Build Status](https://travis-ci.org/bbc/lrud.svg?branch=master)](https://travis-ci.org/bbc/lrud)
 
+**_DEPRECATED: See bbc/px-lrud_**
+
 A spatial navigation library for devices with input via directional controls
 
 ## Upgrading from V2
